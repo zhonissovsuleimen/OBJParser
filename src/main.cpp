@@ -78,45 +78,47 @@ int main(int argc, char **argv)
          if (line.length() < 2) continue;
 
          if (line[0] == 'v' && line[1] == ' ') {
-            line = line.substr(line.find(" ") + 1); 
-            
-            std::string x = line.substr(0, line.find(" "));
+            std::string cords = line.substr(1);
+            cords = cords.substr(cords.find_first_not_of(' '));
+
+            std::string x = cords.substr(0, cords.find(' '));
             vCache[i][0] = std::stof(x);
-            line = line.substr(line.find(" ") + 1);
-            
-            std::string y = line.substr(0, line.find(" "));
+            cords = cords.substr(cords.find(' '));
+            cords = cords.substr(cords.find_first_not_of(' '));
+
+            std::string y = cords.substr(0, cords.find(' '));
             vCache[i][1] = std::stof(y);
-            line = line.substr(line.find(" ") + 1);
+            cords = cords.substr(cords.find(' '));
+            cords = cords.substr(cords.find_first_not_of(' '));
 
-            std::string z = line.substr(0, line.find(" "));
-            vCache[i][2] = std::stof(z);
-
+            vCache[i][2] = std::stof(cords);
          } else if (line[0] == 'v' && line[1] == 't') {
-            line = line.substr(line.find(" ") + 1); 
-            
-            std::string u = line.substr(0, line.find(" "));
+            std::string cords = line.substr(2);
+            cords = cords.substr(cords.find_first_not_of(' '));
+
+            std::string u = cords.substr(0, cords.find(' '));
             vtCache[j][0] = std::stof(u);
-            line = line.substr(line.find(" ") + 1);
-            
-            std::string v = line.substr(0, line.find(" "));
-            vtCache[j][1] = std::stof(v);
+            cords = cords.substr(cords.find(' '));
+            cords = cords.substr(cords.find_first_not_of(' '));
 
+            vtCache[j][1] = std::stof(cords);
          } else if (line[0] == 'v' && line[1] == 'n') {
-            line = line.substr(line.find(" ") + 1); 
-            
-            std::string x = line.substr(0, line.find(" "));
-            vnCache[k][0] = std::stof(x);
-            line = line.substr(line.find(" ") + 1);
-            
-            std::string y = line.substr(0, line.find(" "));
-            vnCache[k][1] = std::stof(y);
-            line = line.substr(line.find(" ") + 1);
+            std::string cords = line.substr(2);
+            cords = cords.substr(cords.find_first_not_of(' '));
 
-            std::string z = line.substr(0, line.find(" "));
-            vnCache[k][2] = std::stof(z);
+            std::string x = cords.substr(0, cords.find(' '));
+            vnCache[k][0] = std::stof(x);
+            cords = cords.substr(cords.find(' '));
+            cords = cords.substr(cords.find_first_not_of(' '));
+
+            std::string y = cords.substr(0, cords.find(' '));
+            vnCache[k][1] = std::stof(y);
+            cords = cords.substr(cords.find(' '));
+            cords = cords.substr(cords.find_first_not_of(' '));
+
+            vnCache[k][2] = std::stof(cords);
          }
       }
-
 
       fileStream.close();
    } else {
