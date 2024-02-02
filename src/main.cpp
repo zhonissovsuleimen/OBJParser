@@ -92,6 +92,7 @@ int main(int argc, char **argv)
             cords = cords.substr(cords.find_first_not_of(' '));
 
             vCache[i][2] = std::stof(cords);
+            i++;
          } else if (line[0] == 'v' && line[1] == 't') {
             std::string cords = line.substr(2);
             cords = cords.substr(cords.find_first_not_of(' '));
@@ -102,6 +103,7 @@ int main(int argc, char **argv)
             cords = cords.substr(cords.find_first_not_of(' '));
 
             vtCache[j][1] = std::stof(cords);
+            j++;
          } else if (line[0] == 'v' && line[1] == 'n') {
             std::string cords = line.substr(2);
             cords = cords.substr(cords.find_first_not_of(' '));
@@ -117,6 +119,7 @@ int main(int argc, char **argv)
             cords = cords.substr(cords.find_first_not_of(' '));
 
             vnCache[k][2] = std::stof(cords);
+            k++;
          }
       }
 
