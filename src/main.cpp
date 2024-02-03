@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
    if (argc < 2) {
       std::cout << "USAGE: homework2_exe [filename]" << std::endl;
-      return 1;
+      return 0;
    }
    std::string filename{ argv[1] };
    std::ifstream fileStream (filename);
@@ -56,9 +56,6 @@ int main(int argc, char **argv)
       //vertex cache: x, y, z, [w]; w is optional and defaults to 1.0
       //w is not used as the project does not require it
       std::vector<std::vector<float>> vCache(vCount, std::vector<float>(3));
-      // for(int i = 0; i < vCount; i++) {
-      //    vCache[i][3] = 1.0;
-      // }
 
       //texture coordinates cache: u, [v, w]; v, w are optional and default to 0.0
       //w is not used as the project does not require it
@@ -120,13 +117,126 @@ int main(int argc, char **argv)
 
             vnCache[k][2] = std::stof(cords);
             k++;
+         } else if (line[0] == 'f' && line[1] == ' '){
+            int v1, vt1, vn1;
+            int v2, vt2, vn2;
+            int v3, vt3, vn3;
+            //in case there are 4 data points
+            int v4, vt4, vn4;
+
+            std::string cords = line.substr(1);
+            cords = cords.substr(cords.find_first_not_of(' '));
+            v1 = std::stoi(cords.substr(0, cords.find('/')));
+            cords = cords.substr(cords.find('/') + 1);
+            vt1 = std::stoi(cords.substr(0, cords.find('/')));
+            cords = cords.substr(cords.find('/') + 1);
+            vn1 = std::stoi(cords.substr(0, cords.find(' ')));            
+            cords = cords.substr(cords.find(' ') + 1);
+
+            cords = cords.substr(cords.find_first_not_of(' '));
+            v2 = std::stoi(cords.substr(0, cords.find('/')));
+            cords = cords.substr(cords.find('/') + 1);
+            vt2 = std::stoi(cords.substr(0, cords.find('/')));
+            cords = cords.substr(cords.find('/') + 1);
+            vn2 = std::stoi(cords.substr(0, cords.find(' ')));
+            cords = cords.substr(cords.find(' ') + 1);
+
+            cords = cords.substr(cords.find_first_not_of(' '));
+            v3 = std::stoi(cords.substr(0, cords.find('/')));
+            cords = cords.substr(cords.find('/') + 1);
+            vt3 = std::stoi(cords.substr(0, cords.find('/')));
+            cords = cords.substr(cords.find('/') + 1);
+            vn3 = std::stoi(cords.substr(0, cords.find(' ')));
+            
+            Triangle t = {
+               VertexInfo {
+                  vCache[v1 - 1][0],
+                  vCache[v1 - 1][1],
+                  vCache[v1 - 1][2],
+                  vnCache[vn1 - 1][0],
+                  vnCache[vn1 - 1][1],
+                  vnCache[vn1 - 1][2],
+                  vtCache[vt1 - 1][0],
+                  vtCache[vt1 - 1][1]
+               },
+               VertexInfo {
+                  vCache[v2 - 1][0],
+                  vCache[v2 - 1][1],
+                  vCache[v2 - 1][2],
+                  vnCache[vn2 - 1][0],
+                  vnCache[vn2 - 1][1],
+                  vnCache[vn2 - 1][2],
+                  vtCache[vt2 - 1][0],
+                  vtCache[vt2 - 1][1]
+               },
+               VertexInfo {
+                  vCache[v3 - 1][0],
+                  vCache[v3 - 1][1],
+                  vCache[v3 - 1][2],
+                  vnCache[vn3 - 1][0],
+                  vnCache[vn3 - 1][1],
+                  vnCache[vn3 - 1][2],
+                  vtCache[vt3 - 1][0],
+                  vtCache[vt3 - 1][1]
+               }
+            }; 
+
+            int erase = 0;
+            int copy = vn3;
+            while (copy > 0) {
+               copy /= 10;
+               erase++;
+            }
+
+            cords = cords.erase(0, erase);            
+            if (cords.length() > 0 && cords.find_first_not_of(' ') != std::string::npos) {
+               cords = cords.substr(cords.find_first_not_of(' '));
+               v4 = std::stoi(cords.substr(0, cords.find('/')));
+               cords = cords.substr(cords.find('/') + 1);
+               vt4 = std::stoi(cords.substr(0, cords.find('/')));
+               cords = cords.substr(cords.find('/') + 1);
+               vn4 = std::stoi(cords.substr(0, cords.find(' ')));
+
+               Triangle t2 = {
+                  VertexInfo {
+                     vCache[v1 - 1][0],
+                     vCache[v1 - 1][1],
+                     vCache[v1 - 1][2],
+                     vnCache[vn1 - 1][0],
+                     vnCache[vn1 - 1][1],
+                     vnCache[vn1 - 1][2],
+                     vtCache[vt1 - 1][0],
+                     vtCache[vt1 - 1][1]
+                  },
+                  VertexInfo {
+                     vCache[v3 - 1][0],
+                     vCache[v3 - 1][1],
+                     vCache[v3 - 1][2],
+                     vnCache[vn3 - 1][0],
+                     vnCache[vn3 - 1][1],
+                     vnCache[vn3 - 1][2],
+                     vtCache[vt3 - 1][0],
+                     vtCache[vt3 - 1][1]
+                  },
+                  VertexInfo {
+                     vCache[v4 - 1][0],
+                     vCache[v4 - 1][1],
+                     vCache[v4 - 1][2],
+                     vnCache[vn4 - 1][0],
+                     vnCache[vn4 - 1][1],
+                     vnCache[vn4 - 1][2],
+                     vtCache[vt4 - 1][0],
+                     vtCache[vt4 - 1][1]
+                  }
+               };
+            } 
          }
       }
 
       fileStream.close();
    } else {
       std::cout << "Unable to open file" << std::endl;
-      return 1;
+      return 0;
    }
 
 
