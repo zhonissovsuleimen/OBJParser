@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <list>
 
 struct VertexInfo
 {
@@ -33,6 +34,8 @@ int main(int argc, char **argv)
    }
    std::string filename{ argv[1] };
    std::ifstream fileStream (filename);
+
+   std::list<Triangle> triangles;
 
    if (fileStream.is_open()) {
       std::string line;
@@ -180,6 +183,7 @@ int main(int argc, char **argv)
                   vtCache[vt3 - 1][1]
                }
             }; 
+            triangles.push_back(t);
 
             int erase = 0;
             int copy = vn3;
@@ -229,6 +233,7 @@ int main(int argc, char **argv)
                      vtCache[vt4 - 1][1]
                   }
                };
+               triangles.push_back(t2);
             } 
          }
       }
@@ -239,5 +244,38 @@ int main(int argc, char **argv)
       return 0;
    }
 
+   std::cout << "Number of triangles: " << triangles.size() << std::endl;
+   for(Triangle i : triangles){
+      std::cout << "t:" << std::endl;
 
+      std::cout << "v:" << std::endl;
+      std::cout << "x=" << i.v1.x << std::endl;
+      std::cout << "y=" << i.v1.y << std::endl;
+      std::cout << "z=" << i.v1.z << std::endl;
+      std::cout << "nx=" << i.v1.normal_x << std::endl;
+      std::cout << "ny=" << i.v1.normal_y << std::endl;
+      std::cout << "nz=" << i.v1.normal_z << std::endl;
+      std::cout << "u=" << i.v1.u << std::endl;
+      std::cout << "v=" << i.v1.v << std::endl;
+
+      std::cout << "v:" << std::endl;
+      std::cout << "x=" << i.v2.x << std::endl;
+      std::cout << "y=" << i.v2.y << std::endl;
+      std::cout << "z=" << i.v2.z << std::endl;
+      std::cout << "nx=" << i.v2.normal_x << std::endl;
+      std::cout << "ny=" << i.v2.normal_y << std::endl;
+      std::cout << "nz=" << i.v2.normal_z << std::endl;
+      std::cout << "u=" << i.v2.u << std::endl;
+      std::cout << "v=" << i.v2.v << std::endl;
+
+      std::cout << "v:" << std::endl;
+      std::cout << "x=" << i.v3.x << std::endl;
+      std::cout << "y=" << i.v3.y << std::endl;
+      std::cout << "z=" << i.v3.z << std::endl;
+      std::cout << "nx=" << i.v3.normal_x << std::endl;
+      std::cout << "ny=" << i.v3.normal_y << std::endl;
+      std::cout << "nz=" << i.v3.normal_z << std::endl;
+      std::cout << "u=" << i.v3.u << std::endl;
+      std::cout << "v=" << i.v3.v << std::endl;
+   }
 }
