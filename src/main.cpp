@@ -105,6 +105,160 @@ void fillCountInfo(std::ifstream& fileStream, unsigned int& vCount, unsigned int
    }
 }
 
+void fillTriangles(const std::string& line, const std::vector<std::vector<float>>& vCache, const std::vector<std::vector<float>>& vnCache, const std::vector<std::vector<float>>& vtCache,  Triangle& t1, bool& isQuad, Triangle& t2){
+   int v1, vt1, vn1;
+   int v2, vt2, vn2;
+   int v3, vt3, vn3;
+   int v4, vt4, vn4;
+
+   std::string cords = line.substr(1);
+   cords = cords.substr(cords.find_first_not_of(' '));
+   v1 = std::stoi(cords.substr(0, cords.find('/')));
+   cords = cords.substr(cords.find('/') + 1);
+   vt1 = std::stoi(cords.substr(0, cords.find('/')));
+   cords = cords.substr(cords.find('/') + 1);
+   vn1 = std::stoi(cords.substr(0, cords.find(' ')));            
+   cords = cords.substr(cords.find(' ') + 1);
+
+   cords = cords.substr(cords.find_first_not_of(' '));
+   v2 = std::stoi(cords.substr(0, cords.find('/')));
+   cords = cords.substr(cords.find('/') + 1);
+   vt2 = std::stoi(cords.substr(0, cords.find('/')));
+   cords = cords.substr(cords.find('/') + 1);
+   vn2 = std::stoi(cords.substr(0, cords.find(' ')));
+   cords = cords.substr(cords.find(' ') + 1);
+
+   cords = cords.substr(cords.find_first_not_of(' '));
+   v3 = std::stoi(cords.substr(0, cords.find('/')));
+   cords = cords.substr(cords.find('/') + 1);
+   vt3 = std::stoi(cords.substr(0, cords.find('/')));
+   cords = cords.substr(cords.find('/') + 1);
+   vn3 = std::stoi(cords.substr(0, cords.find(' ')));
+   
+   t1 = {
+      VertexInfo {
+         vCache[v1 - 1][0],
+         vCache[v1 - 1][1],
+         vCache[v1 - 1][2],
+         vnCache[vn1 - 1][0],
+         vnCache[vn1 - 1][1],
+         vnCache[vn1 - 1][2],
+         vtCache[vt1 - 1][0],
+         vtCache[vt1 - 1][1]
+      },
+      VertexInfo {
+         vCache[v2 - 1][0],
+         vCache[v2 - 1][1],
+         vCache[v2 - 1][2],
+         vnCache[vn2 - 1][0],
+         vnCache[vn2 - 1][1],
+         vnCache[vn2 - 1][2],
+         vtCache[vt2 - 1][0],
+         vtCache[vt2 - 1][1]
+      },
+      VertexInfo {
+         vCache[v3 - 1][0],
+         vCache[v3 - 1][1],
+         vCache[v3 - 1][2],
+         vnCache[vn3 - 1][0],
+         vnCache[vn3 - 1][1],
+         vnCache[vn3 - 1][2],
+         vtCache[vt3 - 1][0],
+         vtCache[vt3 - 1][1]
+      }
+   };
+
+   int erase = 0;
+   int copy = vn3;
+   while (copy > 0) {
+      copy /= 10;
+      erase++;
+   }
+
+   cords = cords.erase(0, erase);            
+   if (cords.length() > 0 && cords.find_first_not_of(' ') != std::string::npos) {
+      isQuad = true;
+      cords = cords.substr(cords.find_first_not_of(' '));
+      v4 = std::stoi(cords.substr(0, cords.find('/')));
+      cords = cords.substr(cords.find('/') + 1);
+      vt4 = std::stoi(cords.substr(0, cords.find('/')));
+      cords = cords.substr(cords.find('/') + 1);
+      vn4 = std::stoi(cords.substr(0, cords.find(' ')));
+
+      t2 = {
+         VertexInfo {
+            vCache[v1 - 1][0],
+            vCache[v1 - 1][1],
+            vCache[v1 - 1][2],
+            vnCache[vn1 - 1][0],
+            vnCache[vn1 - 1][1],
+            vnCache[vn1 - 1][2],
+            vtCache[vt1 - 1][0],
+            vtCache[vt1 - 1][1]
+         },
+         VertexInfo {
+            vCache[v3 - 1][0],
+            vCache[v3 - 1][1],
+            vCache[v3 - 1][2],
+            vnCache[vn3 - 1][0],
+            vnCache[vn3 - 1][1],
+            vnCache[vn3 - 1][2],
+            vtCache[vt3 - 1][0],
+            vtCache[vt3 - 1][1]
+         },
+         VertexInfo {
+            vCache[v4 - 1][0],
+            vCache[v4 - 1][1],
+            vCache[v4 - 1][2],
+            vnCache[vn4 - 1][0],
+            vnCache[vn4 - 1][1],
+            vnCache[vn4 - 1][2],
+            vtCache[vt4 - 1][0],
+            vtCache[vt4 - 1][1]
+         }
+      };
+   } 
+}
+
+void printResults(const std::list<std::list<Triangle>>& objects){
+   for(std::list<Triangle> object : objects){
+      for(Triangle triangle : object){
+         std::cout << "t:" << std::endl;
+
+         std::cout << "v:" << std::endl;
+         std::cout << "x=" << triangle.v1.x << std::endl;
+         std::cout << "y=" << triangle.v1.y << std::endl;
+         std::cout << "z=" << triangle.v1.z << std::endl;
+         std::cout << "nx=" << triangle.v1.normal_x << std::endl;
+         std::cout << "ny=" << triangle.v1.normal_y << std::endl;
+         std::cout << "nz=" << triangle.v1.normal_z << std::endl;
+         std::cout << "u=" << triangle.v1.u << std::endl;
+         std::cout << "v=" << triangle.v1.v << std::endl;
+
+         std::cout << "v:" << std::endl;
+         std::cout << "x=" << triangle.v2.x << std::endl;
+         std::cout << "y=" << triangle.v2.y << std::endl;
+         std::cout << "z=" << triangle.v2.z << std::endl;
+         std::cout << "nx=" << triangle.v2.normal_x << std::endl;
+         std::cout << "ny=" << triangle.v2.normal_y << std::endl;
+         std::cout << "nz=" << triangle.v2.normal_z << std::endl;
+         std::cout << "u=" << triangle.v2.u << std::endl;
+         std::cout << "v=" << triangle.v2.v << std::endl;
+
+         std::cout << "v:" << std::endl;
+         std::cout << "x=" << triangle.v3.x << std::endl;
+         std::cout << "y=" << triangle.v3.y << std::endl;
+         std::cout << "z=" << triangle.v3.z << std::endl;
+         std::cout << "nx=" << triangle.v3.normal_x << std::endl;
+         std::cout << "ny=" << triangle.v3.normal_y << std::endl;
+         std::cout << "nz=" << triangle.v3.normal_z << std::endl;
+         std::cout << "u=" << triangle.v3.u << std::endl;
+         std::cout << "v=" << triangle.v3.v << std::endl;
+      }
+      std::cout << std::endl;
+   }
+}
+
 int main(int argc, char **argv)
 {
    if (argc < 2) {
@@ -162,122 +316,17 @@ int main(int argc, char **argv)
                vnCache[vn][2] = z;
                vn++;
             } else if (isFaceDefinition(line)) {
-               int v1, vt1, vn1;
-               int v2, vt2, vn2;
-               int v3, vt3, vn3;
-               //in case there are 4 data points
-               int v4, vt4, vn4;
+               bool isQuad = false;
+               Triangle t1, t2;
+               fillTriangles(line, vCache, vnCache, vtCache, t1, isQuad, t2);
 
-               std::string cords = line.substr(1);
-               cords = cords.substr(cords.find_first_not_of(' '));
-               v1 = std::stoi(cords.substr(0, cords.find('/')));
-               cords = cords.substr(cords.find('/') + 1);
-               vt1 = std::stoi(cords.substr(0, cords.find('/')));
-               cords = cords.substr(cords.find('/') + 1);
-               vn1 = std::stoi(cords.substr(0, cords.find(' ')));            
-               cords = cords.substr(cords.find(' ') + 1);
+               objectTriangles.push_back(t1);
+               allTriangles.push_back(t1);
 
-               cords = cords.substr(cords.find_first_not_of(' '));
-               v2 = std::stoi(cords.substr(0, cords.find('/')));
-               cords = cords.substr(cords.find('/') + 1);
-               vt2 = std::stoi(cords.substr(0, cords.find('/')));
-               cords = cords.substr(cords.find('/') + 1);
-               vn2 = std::stoi(cords.substr(0, cords.find(' ')));
-               cords = cords.substr(cords.find(' ') + 1);
-
-               cords = cords.substr(cords.find_first_not_of(' '));
-               v3 = std::stoi(cords.substr(0, cords.find('/')));
-               cords = cords.substr(cords.find('/') + 1);
-               vt3 = std::stoi(cords.substr(0, cords.find('/')));
-               cords = cords.substr(cords.find('/') + 1);
-               vn3 = std::stoi(cords.substr(0, cords.find(' ')));
-               
-               Triangle t = {
-                  VertexInfo {
-                     vCache[v1 - 1][0],
-                     vCache[v1 - 1][1],
-                     vCache[v1 - 1][2],
-                     vnCache[vn1 - 1][0],
-                     vnCache[vn1 - 1][1],
-                     vnCache[vn1 - 1][2],
-                     vtCache[vt1 - 1][0],
-                     vtCache[vt1 - 1][1]
-                  },
-                  VertexInfo {
-                     vCache[v2 - 1][0],
-                     vCache[v2 - 1][1],
-                     vCache[v2 - 1][2],
-                     vnCache[vn2 - 1][0],
-                     vnCache[vn2 - 1][1],
-                     vnCache[vn2 - 1][2],
-                     vtCache[vt2 - 1][0],
-                     vtCache[vt2 - 1][1]
-                  },
-                  VertexInfo {
-                     vCache[v3 - 1][0],
-                     vCache[v3 - 1][1],
-                     vCache[v3 - 1][2],
-                     vnCache[vn3 - 1][0],
-                     vnCache[vn3 - 1][1],
-                     vnCache[vn3 - 1][2],
-                     vtCache[vt3 - 1][0],
-                     vtCache[vt3 - 1][1]
-                  }
-               };
-               objectTriangles.push_back(t);
-               allTriangles.push_back(t);
-
-               int erase = 0;
-               int copy = vn3;
-               while (copy > 0) {
-                  copy /= 10;
-                  erase++;
-               }
-
-               cords = cords.erase(0, erase);            
-               if (cords.length() > 0 && cords.find_first_not_of(' ') != std::string::npos) {
-                  cords = cords.substr(cords.find_first_not_of(' '));
-                  v4 = std::stoi(cords.substr(0, cords.find('/')));
-                  cords = cords.substr(cords.find('/') + 1);
-                  vt4 = std::stoi(cords.substr(0, cords.find('/')));
-                  cords = cords.substr(cords.find('/') + 1);
-                  vn4 = std::stoi(cords.substr(0, cords.find(' ')));
-
-                  Triangle t2 = {
-                     VertexInfo {
-                        vCache[v1 - 1][0],
-                        vCache[v1 - 1][1],
-                        vCache[v1 - 1][2],
-                        vnCache[vn1 - 1][0],
-                        vnCache[vn1 - 1][1],
-                        vnCache[vn1 - 1][2],
-                        vtCache[vt1 - 1][0],
-                        vtCache[vt1 - 1][1]
-                     },
-                     VertexInfo {
-                        vCache[v3 - 1][0],
-                        vCache[v3 - 1][1],
-                        vCache[v3 - 1][2],
-                        vnCache[vn3 - 1][0],
-                        vnCache[vn3 - 1][1],
-                        vnCache[vn3 - 1][2],
-                        vtCache[vt3 - 1][0],
-                        vtCache[vt3 - 1][1]
-                     },
-                     VertexInfo {
-                        vCache[v4 - 1][0],
-                        vCache[v4 - 1][1],
-                        vCache[v4 - 1][2],
-                        vnCache[vn4 - 1][0],
-                        vnCache[vn4 - 1][1],
-                        vnCache[vn4 - 1][2],
-                        vtCache[vt4 - 1][0],
-                        vtCache[vt4 - 1][1]
-                     }
-                  };
+               if (isQuad) {
                   objectTriangles.push_back(t2);
                   allTriangles.push_back(t2);
-               } 
+               }
             }
          }
 
@@ -290,41 +339,5 @@ int main(int argc, char **argv)
       return 0;
    }
    
-   for(std::list<Triangle> object : objects){
-      for(Triangle triangle : object){
-         std::cout << "t:" << std::endl;
-
-         std::cout << "v:" << std::endl;
-         std::cout << "x=" << triangle.v1.x << std::endl;
-         std::cout << "y=" << triangle.v1.y << std::endl;
-         std::cout << "z=" << triangle.v1.z << std::endl;
-         std::cout << "nx=" << triangle.v1.normal_x << std::endl;
-         std::cout << "ny=" << triangle.v1.normal_y << std::endl;
-         std::cout << "nz=" << triangle.v1.normal_z << std::endl;
-         std::cout << "u=" << triangle.v1.u << std::endl;
-         std::cout << "v=" << triangle.v1.v << std::endl;
-
-         std::cout << "v:" << std::endl;
-         std::cout << "x=" << triangle.v2.x << std::endl;
-         std::cout << "y=" << triangle.v2.y << std::endl;
-         std::cout << "z=" << triangle.v2.z << std::endl;
-         std::cout << "nx=" << triangle.v2.normal_x << std::endl;
-         std::cout << "ny=" << triangle.v2.normal_y << std::endl;
-         std::cout << "nz=" << triangle.v2.normal_z << std::endl;
-         std::cout << "u=" << triangle.v2.u << std::endl;
-         std::cout << "v=" << triangle.v2.v << std::endl;
-
-         std::cout << "v:" << std::endl;
-         std::cout << "x=" << triangle.v3.x << std::endl;
-         std::cout << "y=" << triangle.v3.y << std::endl;
-         std::cout << "z=" << triangle.v3.z << std::endl;
-         std::cout << "nx=" << triangle.v3.normal_x << std::endl;
-         std::cout << "ny=" << triangle.v3.normal_y << std::endl;
-         std::cout << "nz=" << triangle.v3.normal_z << std::endl;
-         std::cout << "u=" << triangle.v3.u << std::endl;
-         std::cout << "v=" << triangle.v3.v << std::endl;
-      }
-      std::cout << std::endl;
-   }
-   
+   printResults(objects);
 }
