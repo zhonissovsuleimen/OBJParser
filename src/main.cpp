@@ -92,6 +92,19 @@ void fillTextureCords(const std::string& line, float& u, float& v){
    v = std::stof(cords);
 }
 
+void fillCountInfo(std::ifstream& fileStream, unsigned int& vCount, unsigned int& vtCount, unsigned int& vnCount){
+   std::string line;
+   while (std::getline(fileStream, line)) {
+      if (isVertexDefinition(line)) {
+         vCount++;
+      } else if (isTextureDefinition(line)) {
+         vtCount++;
+      } else if (isNormalDefinition(line)) {
+         vnCount++;
+      }
+   }
+}
+
 int main(int argc, char **argv)
 {
    if (argc < 2) {
@@ -107,30 +120,13 @@ int main(int argc, char **argv)
    if (fileStream.is_open()) {
       std::string line;
 
-      //counting the number of v's, vt's, and vn's
       unsigned int vCount = 0;
       unsigned int vtCount = 0;
       unsigned int vnCount = 0;
+      fillCountInfo(fileStream, vCount, vtCount, vnCount);
 
-      while (std::getline(fileStream, line)) {
-         if (isVertexDefinition(line)) {
-            vCount++;
-         } else if (isTextureDefinition(line)) {
-            vtCount++;
-         } else if (isNormalDefinition(line)) {
-            vnCount++;
-         }
-      }
-
-      //vertex cache: x, y, z, [w]; w is optional and defaults to 1.0
-      //w is not used as the project does not require it
       std::vector<std::vector<float>> vCache(vCount, {0.0f, 0.0f, 0.0f});
-
-      //texture coordinates cache: u, [v, w]; v, w are optional and default to 0.0
-      //w is not used as the project does not require it
       std::vector<std::vector<float>> vtCache(vtCount, {0.0f, 0.0f});
-
-      //vertex normals cache: x, y, z;
       std::vector<std::vector<float>> vnCache(vnCount, {0.0f, 0.0f, 0.0f});
    
       fileStream.clear();
@@ -142,7 +138,6 @@ int main(int argc, char **argv)
       while (!fileStream.eof()) {
          std::list<Triangle> objectTriangles;
 
-         //parsing the v's, vt's, and vn's and storing them
          while (std::getline(fileStream, line)) {
             if (isObjectDefinition(line)) break; 
 
