@@ -136,10 +136,6 @@ int main(int argc, char **argv)
       fileStream.clear();
       fileStream.seekg(0);
 
-      while (std::getline(fileStream, line)) {
-          if (isObjectDefinition(line)) break;
-      }
-
       int v = 0;
       int vt = 0;
       int vn = 0;
