@@ -26,6 +26,72 @@ struct Triangle
     VertexInfo v3;
 };
 
+bool isObjectDefinition(const std::string& line){
+   return line.length() >= 2 && line[0] == 'o' && line[1] == ' ';
+}
+
+bool isVertexDefinition(const std::string& line){
+   return line.length() >= 2 && line[0] == 'v' && line[1] == ' ';
+}
+
+bool isNormalDefinition(const std::string& line){
+   return line.length() >= 2 && line[0] == 'v' && line[1] == 'n';
+}
+
+bool isTextureDefinition(const std::string& line){
+   return line.length() >= 2 && line[0] == 'v' && line[1] == 't';
+}
+
+bool isFaceDefinition(const std::string& line){
+   return line.length() >= 2 && line[0] == 'f' && line[1] == ' ';
+}
+
+void fillVertexCords(const std::string& line, float& x, float& y, float& z){
+   std::string cords = line.substr(1);
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   std::string xStr = cords.substr(0, cords.find(' '));
+   x = std::stof(xStr);
+   cords = cords.substr(cords.find(' '));
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   std::string yStr = cords.substr(0, cords.find(' '));
+   y = std::stof(yStr);
+   cords = cords.substr(cords.find(' '));
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   z = std::stof(cords);
+}
+
+void fillNormalCords(const std::string& line, float& x, float& y, float& z){
+   std::string cords = line.substr(2);
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   std::string xCords = cords.substr(0, cords.find(' '));
+   x = std::stof(xCords);
+   cords = cords.substr(cords.find(' '));
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   std::string yCords = cords.substr(0, cords.find(' '));
+   y = std::stof(yCords);
+   cords = cords.substr(cords.find(' '));
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   z = std::stof(cords);
+}
+
+void fillTextureCords(const std::string& line, float& u, float& v){
+   std::string cords = line.substr(2);
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   std::string uStr = cords.substr(0, cords.find(' '));
+   u = std::stof(uStr);
+   cords = cords.substr(cords.find(' '));
+   cords = cords.substr(cords.find_first_not_of(' '));
+
+   v = std::stof(cords);
+}
+
 int main(int argc, char **argv)
 {
    if (argc < 2) {
@@ -47,93 +113,64 @@ int main(int argc, char **argv)
       unsigned int vnCount = 0;
 
       while (std::getline(fileStream, line)) {
-         if (line.length() < 2) continue;
-
-         if (line[0] == 'v' && line[1] == ' ') {
+         if (isVertexDefinition(line)) {
             vCount++;
-         } else if (line[0] == 'v' && line[1] == 't') {
+         } else if (isTextureDefinition(line)) {
             vtCount++;
-         } else if (line[0] == 'v' && line[1] == 'n') {
+         } else if (isNormalDefinition(line)) {
             vnCount++;
          }
       }
+
       //vertex cache: x, y, z, [w]; w is optional and defaults to 1.0
       //w is not used as the project does not require it
-      std::vector<std::vector<float>> vCache(vCount, std::vector<float>(3));
+      std::vector<std::vector<float>> vCache(vCount, {0.0f, 0.0f, 0.0f});
 
       //texture coordinates cache: u, [v, w]; v, w are optional and default to 0.0
       //w is not used as the project does not require it
-      std::vector<std::vector<float>> vtCache(vtCount, std::vector<float>(2));
+      std::vector<std::vector<float>> vtCache(vtCount, {0.0f, 0.0f});
 
       //vertex normals cache: x, y, z;
-      std::vector<std::vector<float>> vnCache(vnCount, std::vector<float>(3));
+      std::vector<std::vector<float>> vnCache(vnCount, {0.0f, 0.0f, 0.0f});
    
       fileStream.clear();
       fileStream.seekg(0);
 
-      int i = 0;
-      int j = 0;
-      int k = 0;
       while (std::getline(fileStream, line)) {
-          if (line.length() < 2) continue;
-          if (line[0] == 'o' && line[1] == ' ') {
-              break;
-          }
+          if (isObjectDefinition(line)) break;
       }
 
+      int v = 0;
+      int vt = 0;
+      int vn = 0;
       while (!fileStream.eof()) {
-          std::list<Triangle> objectTriangles;
+         std::list<Triangle> objectTriangles;
+
          //parsing the v's, vt's, and vn's and storing them
          while (std::getline(fileStream, line)) {
-            if (line.length() < 2) continue;
-            if (line[0] == 'o' && line[1] == ' ') {
-               break;
-            }
+            if (isObjectDefinition(line)) break; 
 
-            if (line[0] == 'v' && line[1] == ' ') {
-               std::string cords = line.substr(1);
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               std::string x = cords.substr(0, cords.find(' '));
-               vCache[i][0] = std::stof(x);
-               cords = cords.substr(cords.find(' '));
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               std::string y = cords.substr(0, cords.find(' '));
-               vCache[i][1] = std::stof(y);
-               cords = cords.substr(cords.find(' '));
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               vCache[i][2] = std::stof(cords);
-               i++;
-            } else if (line[0] == 'v' && line[1] == 't') {
-               std::string cords = line.substr(2);
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               std::string u = cords.substr(0, cords.find(' '));
-               vtCache[j][0] = std::stof(u);
-               cords = cords.substr(cords.find(' '));
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               vtCache[j][1] = std::stof(cords);
-               j++;
-            } else if (line[0] == 'v' && line[1] == 'n') {
-               std::string cords = line.substr(2);
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               std::string x = cords.substr(0, cords.find(' '));
-               vnCache[k][0] = std::stof(x);
-               cords = cords.substr(cords.find(' '));
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               std::string y = cords.substr(0, cords.find(' '));
-               vnCache[k][1] = std::stof(y);
-               cords = cords.substr(cords.find(' '));
-               cords = cords.substr(cords.find_first_not_of(' '));
-
-               vnCache[k][2] = std::stof(cords);
-               k++;
-            } else if (line[0] == 'f' && line[1] == ' '){
+            if (isVertexDefinition(line)) {
+               float x,y,z;
+               fillVertexCords(line, x, y, z);
+               vCache[v][0] = x;
+               vCache[v][1] = y;
+               vCache[v][2] = z;
+               v++;
+            } else if (isTextureDefinition(line)) {
+               float u,v;
+               fillTextureCords(line, u, v);
+               vtCache[vt][0] = u;
+               vtCache[vt][1] = v;
+               vt++;
+            } else if (isNormalDefinition(line)) {
+               float x,y,z;
+               fillNormalCords(line, x, y, z);
+               vnCache[vn][0] = x;
+               vnCache[vn][1] = y;
+               vnCache[vn][2] = z;
+               vn++;
+            } else if (isFaceDefinition(line)) {
                int v1, vt1, vn1;
                int v2, vt2, vn2;
                int v3, vt3, vn3;
