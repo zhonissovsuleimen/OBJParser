@@ -93,6 +93,9 @@ void fillTextureCords(const std::string& line, float& u, float& v){
 }
 
 void fillCountInfo(std::ifstream& fileStream, unsigned int& vCount, unsigned int& vtCount, unsigned int& vnCount){
+   fileStream.clear();
+   fileStream.seekg(0);
+
    std::string line;
    while (std::getline(fileStream, line)) {
       if (isVertexDefinition(line)) {
@@ -220,6 +223,25 @@ void fillTriangles(const std::string& line, const std::vector<std::vector<float>
    } 
 }
 
+bool containsFaceWithFiveOrMoreVertecies(std::ifstream& fileStream){
+   fileStream.clear();
+   fileStream.seekg(0);
+
+   std::string line;
+   while (std::getline(fileStream, line)) {
+      if(isFaceDefinition(line)){
+         unsigned int count = 0;
+         for(char c : line){
+            if(c == '/') count++;
+         }
+
+         if(count > 4*2) return true;
+      }
+   }
+
+   return false;
+}
+
 void printResults(const std::list<std::list<Triangle>>& objects){
    for(std::list<Triangle> object : objects){
       for(Triangle triangle : object){
@@ -273,6 +295,11 @@ int main(int argc, char **argv)
 
    if (fileStream.is_open()) {
       std::string line;
+      if(containsFaceWithFiveOrMoreVertecies(fileStream)){
+         std::cout << "The file contains a face with five or more vertices. Please triangulate the object" << std::endl;
+         return 0;
+      }
+
 
       unsigned int vCount = 0;
       unsigned int vtCount = 0;
